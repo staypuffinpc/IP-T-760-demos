@@ -1,0 +1,29 @@
+<html>
+	<head>
+		<title>Reading in Text</title>
+	</head>
+	<style>
+	body {
+		color: #fff;
+		padding: 5px;
+		width: 95%;
+		font-size: 24;
+	}
+	p {
+		padding: 5px;
+	}
+	mark {
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+	.blessing {
+		background-color: yellow;
+	}
+	.promise {
+		background-color: green;
+	}
+	</style>
+	<body>
+	ERROR:  Unable to retrieve text
+	</body>
+</html>
