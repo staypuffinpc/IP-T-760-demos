@@ -2,11 +2,37 @@
 -- PURPOSE: to create numerous new items on the screen
 -----------------------------------------------------------------------------------------
 
+--enable multitouch
+system.activate( "multitouch" )
 
 ----------------- VARIABLES --------------------------
 _H = display.contentHeight
 _W = display.contentWidth
+local moveRate = 2 -- how fast the cookie moves across the screen
+local createRate = 1500 --how often a new cookie is spawned (in milliseconds)
+local level = 3
 
+--create an object for each cookie
+local oreo = {name = "oreo", value = 1}
+local gingerbread = {name = "gingerbread", value = 10}
+local chocolate_chip = {name = "chocolate_chip", value = 100}
+
+--list which cookies are available on each level
+local cookieList = {
+	{oreo},
+	{oreo, gingerbread},
+	{oreo, gingerbread, chocolate_chip},
+}
+print ("level: "..level)
+local thisLevel = cookieList[level]
+for i,v in ipairs(thisLevel) do 
+	print (thisLevel[i].name)
+end
+
+-------------------------- simple DISPLAY OBJECTS ----------------------
+local showLevel = display.newRetinaText("Level: "..tostring(level), 100, _H*.9, "Arial", 42)
+local showMoveRate = display.newRetinaText("Speed: "..tostring(moveRate), 300, _H*.9, "Arial", 42)
+local showCreateRate = display.newRetinaText("Interval: "..tostring(createRate), 500, _H*.9, "Arial", 42)
 
 --couldn't seem to get external classes to work, so I'm going to use Rafael Hernandez's method of spawning objects as seen in the Bubble Ball exercise
 local function spawnCookie(kind, value)
@@ -42,6 +68,7 @@ local function spawnCookie(kind, value)
 			number.y = -50
 			number:removeSelf()
 			number = nil
+			return true
 		elseif (event.phase == "ended") then
 			number:removeSelf()
 			number = nil
@@ -53,7 +80,7 @@ local function spawnCookie(kind, value)
 	--make the cookie move across the screen
 	function cookie:enterFrame()
 		if (cookie.moved ~= "yes") then
-			cookie.x = cookie.x - 3
+			cookie.x = cookie.x - moveRate
 		end
 		if cookie.x < -50 then 
 			Runtime:removeEventListener("enterFrame",cookie)
@@ -68,10 +95,12 @@ end
 
 --set up a timer to generate cookies (NOTE: allow users to increase the speed of the cookies across the screen and the rate at which cookies are generated)
 local generator = function ()
-	spawnCookie("oreo",1)
+	local newCookie = math.random(#thisLevel)
+	print (thisLevel[newCookie].name)
+	spawnCookie(thisLevel[newCookie].name,thisLevel[newCookie].value)
 end
 
-timer.performWithDelay(1000, generator,0)
+timer.performWithDelay(createRate, generator,0)
 
 --track how much memory is being used
 local garbage = display.newRetinaText("Garbage collected:  "..collectgarbage("count"),0, 50, "Arial", 36)
