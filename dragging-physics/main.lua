@@ -12,7 +12,7 @@ system.activate("multitouch")
 --init globals
 _H = display.contentHeight
 _W = display.contentWidth
-local onLocalCollision
+local onLocalCollision --forward referencing a function
 
 --create a single cloud and numbershower and move it off screen
 local cloud = display.newImageRect("cloud.png",256,256)
@@ -25,10 +25,10 @@ showValue:setTextColor(255)
 local function onDrag (event)
 	gameUI.dragBody(event, {maxForce = 200000, frequency = 10, center = true})
 	if event.phase == "moved" then
-		display.getCurrentStage():insert(showValue)
+		display.getCurrentStage():insert(showValue) --placing show value into the current stage group and putting it on top
 		showValue.x = event.x 
-		showValue.y = event.y
-		return true
+		showValue.y = event.y-100
+		return true --this keeps it from going to the other "if"
 	end
 	if event.phase == "ended" or event.phase == "cancelled" then
 		showValue.x = -200
@@ -71,7 +71,7 @@ end
 local function boxHit (x,y, obj1, obj2)
 	print ("cloud should appear")
 	--make the cloud appear on top
-	local thisStage = display.getCurrentStage():insert(cloud)
+	local thisStage = display.getCurrentStage():insert(cloud) --placing the cloud in the group on top
 	cloud.x = x
 	cloud.y = y
 	--wrap the function I really want to run inside of a closure so that I can pass it an argument
@@ -79,23 +79,23 @@ local function boxHit (x,y, obj1, obj2)
 	timer.performWithDelay(300, closure, 1)
 end
 
-onLocalCollision = function(self, event)
+onLocalCollision = function(self, event) --globalized so you can forward reference
 	local hitX = self.x 
 	local hitY = self.y 
 	local obj1 = self
-	local obj2 = event.other
+	local obj2 = event.other --this is the object that was hit rather than event.target which is self
 	if event.phase == "began" then
 		print ("collision began")		
 		local closure = function() return boxHit(hitX,hitY,obj1, obj2) end
-		timer.performWithDelay(100, closure, 1)
+		timer.performWithDelay(100, closure, 1) --(time, function, number of iterations)
 		showValue.text = tostring(event.target.id)
 		display.getCurrentStage():insert(showValue)
 		showValue.x = hitX
 		showValue.y = hitY
-		return true;
+		return true; --this ends it before it fires again
 	end
 	
-	
+	return true --keeps from firing again
 end
 
 
@@ -111,6 +111,6 @@ for i=1,5 do
 	box.linearDamping = 9
 	box:addEventListener("touch",onDrag)
 	box.collision = onLocalCollision
-	box:addEventListener("collision",box)
+	box:addEventListener("collision",box) --listening for a collision on itself
 end
 print("dragging test")
