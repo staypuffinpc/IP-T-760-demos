@@ -86,8 +86,6 @@ local function spawnCookie(kind, value)
 		end
 		if cookie.x < -50 then 
 			Runtime:removeEventListener("enterFrame",cookie)
-			table.remove(itemsOnScreen, cookie)
-			print(#itemsOnScreen)
 			cookie:removeSelf()
 			cookie = nil
 		end
